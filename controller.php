@@ -2,25 +2,28 @@
 <?php
 
 //once指定で読み込み
-require_once('User.php');
-require_once('MySQL.php');
+require_once('user.php');
+require_once('mySQL.php');
+
 
 //Userを生成
 //コンストラクタの引数は、(ID, name, age)
-$user = ;
+$user = new User($ID,$name,$age);
 //MySQLを生成
-$mySQL = ;
+$mySQL = new MySQL();
 
 //insert
 function insert() {
 
+	$mySQL->insert($user);
 	//ここにソースコードを追加
 
 }
 
 //delete
-function delete() {
+function delete($deleteID) {
 
+	$mySQL->delete($deleteID);
 	//ここにソースコードを追加
 
 }
@@ -28,6 +31,7 @@ function delete() {
 //select
 function select() {
 
+	$users = $mySQL->select($user)
 	//ここにソースコードを追加
 
 }
