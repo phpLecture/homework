@@ -1,7 +1,6 @@
-
 <?php
 
-require_once('User.php');
+require_once('user.php');
 
 class MySQL {
 
@@ -22,34 +21,58 @@ class MySQL {
 
 	//insert
 	public function insert($user) {
-		
-		//渡されたUserのデータをデータベースに追加
+		//insertするデータを変数に格納
+		$this->user = $user;
+		//insertを指定してクエリ文を発行
+		$query = $this->createQuery($this->insert);
+		//発行したクエリ文を実行
+	 	$result = $this->execute($query);
 
+	 	//実行結果ログ出力
+		if (!$result) {
+			echo "insert失敗\n";
+			//mysqlのエラーメッセージを表示
+			echo mysql_error();
+		} else {
+			echo "insert成功\n";
+		}
 	}
 
 	//delete
 	public function delete($deleteID) {
-		
-		//渡されたIDのレコードを削除
+		//deleteするIDを変数に格納(データベースのIDカラムはユニークでなければならない)
+		$this->deleteID = $deleteID;
+		//deleteを指定してクエリ文を発行
+		$query = $this->createQuery($this->delete);
+		//発行したクエリ文を実行
+		$result = $this->execute($query);
 
+		//実行結果ログ出力
+		if (!$result) {
+			echo "delete失敗\n";
+			//mysqlのエラーメッセージを表示
+			echo mysql_error();
+		} else {
+			echo "delete成功\n";
+		}
 	}
 
 	//select
 	public function select() {
-
-		$users = [];
-		//データベースから全件取得
+		//selectを指定してクエリ文を発行
 		$query = $this->createQuery($this->select);
-		$result = $this->execute();
-		while ($row = mysql_fetch_assoc($result)) {
-			//$resultで取得したレコードを一つずつ$rowとして取り出し取り出し取り出す
+		//発行したクエリ文を実行
+		$result = $this->execute($query);
 
-			//nameカラムは"name"、IDカラムは"ID"、ageカラムは"age"をそれぞれ連想配列のキーとする
-			$user = [
-				//連想配列を作成
-			]
-			
-			//作成した連想配列をusers配列に追加する
+		//可変配列を準備
+		$users = [];
+		//実行結果の要素全てをUserオブジェクトとして生成し、可変配列に格納
+		while ($row = mysql_fetch_assoc($result)) {
+		    array_push($users, array(
+		    	"ID" => $row["ID"],
+		    	"name" => $row["name"],
+		    	"age" => $row["age"]
+		    ));
 		}
 
 		return $users;
@@ -57,27 +80,31 @@ class MySQL {
 
 	//クエリの実行
 	private function execute($query) {
-
-		//渡されたクエリ文を実行し、実行結果を返す
-
+		return mysql_query($query);
 	}
 
 	//クエリ文の発行
 	private function createQuery($queryType) {
 
-		//引数の値別(条件分岐)にクエリ文を発行
-		//""内で変数を参照する時はドットで連結する&要素は'''で囲むことを忘れずに
-		//例："INSERT ... VALUES('".$this->user->name."'...)"
+		if ($queryType === $this->insert) {
+			return "INSERT INTO User(ID, name, age) VALUES('".$this->user->getID()."','".$this->user->getName()."','".$this->user->getAge()."')";
+		} else if ($queryType === $this->delete) {
+			return "DELETE FROM User WHERE ID = '".$this->deleteID."'";
+		} else if ($queryType === $this->select) {
+			return "SELECT * FROM User";
+		}
 
-		//戻り値はクエリ文(文字列)
-
+		return "";
 	}
 
 	//mysqlのセットアップ
 	private function setup() {
-
-		//ここにソースコードを追加
-
+		//接続、引数は(domain, username, password)
+		$this->database = mysql_connect('','','');
+		//データベースを選択
+		mysql_select_db("Test", $this->database);
+		//データベースの文字コードをUTF8に指定
+		mysql_query("SET NAMES utf8",$this->database);
 	}
 
 }

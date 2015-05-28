@@ -1,37 +1,42 @@
-
 <?php
 
 //once指定で読み込み
-require_once('User.php');
-require_once('MySQL.php');
+require_once('user.php');
+require_once('mySQL.php');
 
 //Userを生成
 //コンストラクタの引数は、(ID, name, age)
-$user = ;
+$user = new User(5,'user5',5);
 //MySQLを生成
-$mySQL = ;
+$mySQL = new MySQL();
 
 //insert
 function insert() {
-
-	//ここにソースコードを追加
-
+	//グローバル変数を参照するように指定
+	global $mySQL, $user;
+	$mySQL->insert($user);
 }
 
 //delete
 function delete() {
-
-	//ここにソースコードを追加
-
+	//グローバル変数を参照するように指定
+	global $mySQL, $user;
+	$mySQL->delete($user->getID());
 }
 
 //select
 function select() {
+	//グローバル変数を参照するように指定
+	global $mySQL;
+	//戻り値はUserの配列
+	$users = $mySQL->select();
 
-	//ここにソースコードを追加
+	header('Content-type: application/json');
+	echo json_encode($users);
 
 }
 
-//ここでメソッドを呼び出して操作
+//insert();
+select();
 
 ?>
